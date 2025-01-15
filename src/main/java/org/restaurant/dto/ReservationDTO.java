@@ -18,4 +18,6 @@ public class ReservationDTO {
     private String day;
     private LocalTime startTime;
     private LocalTime endTime;
+    private int idAgenda;
+
 }

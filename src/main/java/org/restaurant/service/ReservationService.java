@@ -1,6 +1,7 @@
 package org.restaurant.service;
 
 import org.restaurant.dto.ReservationDTO;
+import org.restaurant.entity.Agenda;
 import org.restaurant.entity.Reservation;
 import org.restaurant.exception.ScheduleOverlapException;
 import org.restaurant.repository.ReservationRepository;
@@ -8,6 +9,7 @@ import org.restaurant.repository.AgendaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,10 +19,18 @@ public class ReservationService {
     @Autowired
     private ReservationRepository reservationRepository;
     @Autowired
-    private AgendaRepository scheduleRepository;
+    private AgendaRepository agendaRepository;
 
     public Reservation createReservation(ReservationDTO dto) {
-        List<Reservation> overlappingReservations = reservationRepository.findOverlappingReservations(dto.getDay(), dto.getStartTime(), dto.getEndTime());
+        Agenda agenda = agendaRepository.findById((long) dto.getIdAgenda())
+                .orElseThrow(() -> new RuntimeException("Agenda not found"));
+
+        List<Reservation> overlappingReservations = reservationRepository.findOverlappingReservations(
+                dto.getDay(),
+                dto.getStartTime(),
+                dto.getEndTime()
+        );
+
         if (!overlappingReservations.isEmpty()) {
             throw new ScheduleOverlapException("The schedule overlaps with an existing reservation.");
         }
@@ -32,6 +42,7 @@ public class ReservationService {
         reservation.setDay(dto.getDay());
         reservation.setStartTime(dto.getStartTime());
         reservation.setEndTime(dto.getEndTime());
+        reservation.setAgenda(agenda);
 
         return reservationRepository.save(reservation);
     }
@@ -44,12 +55,23 @@ public class ReservationService {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Reservation not found"));
 
-        List<Reservation> overlappingReservations = reservationRepository.findOverlappingReservations(dto.getDay(), dto.getStartTime(), dto.getEndTime())
-                .stream()
-                .filter(r -> !r.getId().equals(id))
-                .collect(Collectors.toList());
+        Agenda agenda = agendaRepository.findById((long) dto.getIdAgenda())
+                .orElseThrow(() -> new RuntimeException("Agenda not found"));
 
-        if (!overlappingReservations.isEmpty()) {
+        List<Reservation> overlappingReservations = reservationRepository.findOverlappingReservations(
+                dto.getDay(),
+                dto.getStartTime(),
+                dto.getEndTime()
+        );
+
+        List<Reservation> filteredReservations = new ArrayList<>();
+        for (Reservation r : overlappingReservations) {
+            if (!r.getId().equals(id)) {
+                filteredReservations.add(r);
+            }
+        }
+
+        if (!filteredReservations.isEmpty()) {
             throw new ScheduleOverlapException("The schedule overlaps with an existing reservation.");
         }
 
@@ -59,6 +81,7 @@ public class ReservationService {
         reservation.setDay(dto.getDay());
         reservation.setStartTime(dto.getStartTime());
         reservation.setEndTime(dto.getEndTime());
+        reservation.setAgenda(agenda);
 
         return reservationRepository.save(reservation);
     }

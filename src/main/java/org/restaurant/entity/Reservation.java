@@ -1,11 +1,12 @@
 package org.restaurant.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Entity
@@ -23,4 +24,10 @@ public class Reservation {
     private String day;
     private LocalTime startTime;
     private LocalTime endTime;
+
+    @ManyToOne
+    @JoinColumn(name = "agenda_id", nullable = false)
+    @JsonBackReference
+    @ToString.Exclude
+    private Agenda agenda;
 }

@@ -13,6 +13,12 @@ import java.util.List;
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
     List<Reservation> findByDay(String day);
 
-    @Query("SELECT r FROM Reservation r WHERE r.day = :day AND ( (r.startTime < :endTime AND r.endTime > :startTime))")
-    List<Reservation> findOverlappingReservations(@Param("day") String day, @Param("startTime") LocalTime startTime, @Param("endTime") LocalTime endTime);
+    @Query("SELECT r FROM Reservation r WHERE r.day = :day " +
+            "AND ((:startTime BETWEEN r.startTime AND r.endTime) " +
+            "OR (:endTime BETWEEN r.startTime AND r.endTime) " +
+            "OR (r.startTime BETWEEN :startTime AND :endTime) " +
+            "OR (r.endTime BETWEEN :startTime AND :endTime))")
+    List<Reservation> findOverlappingReservations(@Param("day") String day,
+                                                  @Param("startTime") LocalTime startTime,
+                                                  @Param("endTime") LocalTime endTime);
 }
