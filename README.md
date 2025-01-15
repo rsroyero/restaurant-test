@@ -1,16 +1,13 @@
 
-# Franchise Management API
+# Restaurant Management API
 
-Este proyecto es una API de gestión de franquicias desarrollada con Java, Spring Boot, MySQL y Docker. La API permite gestionar franquicias, sucursales y productos.
+Este proyecto es una API de gestión de Reservas desarrollada con Java, Spring Boot, MySQL y Docker. La API permite gestionar reservas y agendas.
 
-# Características
+# Características Modelo
 
-Franquicias: Gestiona franquicias que consisten en un nombre y una lista de sucursales.
+Agenda: Gestiona franquicias que consisten en un nombre y una lista de sucursales.
 
-Sucursales: Cada sucursal tiene un nombre y una lista de productos.
-
-Productos: Cada producto tiene un nombre y una cantidad de stock.
-
+Reservation: Cada sucursal tiene un nombre y una lista de productos.
 
 
 
