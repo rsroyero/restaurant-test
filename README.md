@@ -5,10 +5,9 @@ Este proyecto es una API de gestión de Reservas desarrollada con Java, Spring B
 
 # Características Modelo
 
-Agenda: Gestiona franquicias que consisten en un nombre y una lista de sucursales.
+Agenda: Gestiona la agenda/calendario que consisten en dia, horarios disponible y disponibilidad. 
 
-Reservation: Cada sucursal tiene un nombre y una lista de productos.
-
+Reservation: Reservas de las personas asociadas a una agenda, horario disponible y cantidad de persona en al reserva.
 
 
 
@@ -18,13 +17,20 @@ Reservation: Cada sucursal tiene un nombre y una lista de productos.
 Descargar el proyecto, el proycto se debe llamar
 
 ```bash
-  nequi-technical-test
+  restaurant-test
 ```
 
 Si al descargarlo directamente por github web el proyecto le aparece con otro nombre, debe modificar la carpeta de descarga de la siguiente manera
 
 ```bash
-  nequi-technical-test-master --> nequi-technical-test
+  restaurant-test-master --> restaurant-test
+```
+
+
+Ubicarse en la raiz del proyecto y ejecutar el siguiente comando
+
+```bash
+  mvn clean package
 ```
 
 Levantar el contenedor de docker
@@ -33,160 +39,108 @@ Levantar el contenedor de docker
   docker-compose up -d
 ```
 
-Ubicarse en la raiz del proyecto y ejecutar el siguiente comando
-
-```bash
-  mvn clean install
-```
-
 Sobre la raiz del proyecto ejecutar el siguiente comando para arrancar el proyecto.
 
 ```bash
   mvn spring-boot:run 
 ```
-
-Sobre Postman ejecutar el siguiente endpoint para verificar que el proyecto este corriendo
-
-```bash
-GET http://localhost:8080/api/ping
-
-```
-
-Respuesta
-```bash
-Pong >>> It works!
-```
     
 ## API's
 
-#### Agregar una nueva franquicia
+#### Consultar todas las agendas
 
 Endpoint
 ```bash
-  POST http://localhost:8080/api/franchises
+  GET http://localhost:8000/api/agenda
 
+```
+
+#### Consultar agenda por dia
+
+Endpoint
+```bash
+  GET http://localhost:8000/api/agenda/available?day=Monday
+
+```
+
+
+#### Realizar una reservacion 
+
+```bash
+  POST http://localhost:8000/api/reservations
 ```
 Body
 ```bash
 {
-  "name": "Franchise A"
+    "firstName": "Juan",
+    "lastName": "Pérez",
+    "numPeople": 4,
+    "day": "Monday",
+    "startTime": "19:00:00",
+    "endTime": "20:00:00",
+    "idAgenda": 1
 }
 
 ```
 Respuesta
 ```bash
 {
-  "id": 1,
-  "name": "Franchise A",
-  "branches": []
-}
-
-```
-#### Agregar una nueva sucursal a una franquicia
-
-```bash
-  POST http://localhost:8080/api/franchises/{franchiseId}/branches
-```
-Body
-```bash
-{
-  "name": "Branch A"
-}
-
-```
-Respuesta
-```bash
-{
-  "id": 1,
-  "name": "Branch A",
-  "franchise": {
     "id": 1,
-    "name": "Franchise A"
-  }
+    "firstName": "Juan",
+    "lastName": "Pérez",
+    "numPeople": 4,
+    "day": "Monday",
+    "startTime": "19:00:00",
+    "endTime": "20:00:00"
 }
 ```
 
-#### Agregar un nuevo producto a una sucursal
+#### Consultar agenda por dia
 
 ```bash
-  POST http://localhost:8080/api/franchises/branches/{branchId}/products
-```
-Body
-```bash
-{
-  "name": "Product A",
-  "stock": 100
-}
-
-```
-Respuesta
-```bash
-{
-  "id": 1,
-  "name": "Product A",
-  "stock": 100,
-  "branch": {
-    "id": 1,
-    "name": "Branch A"
-  }
-}
-```
-
-#### Mostrar el producto con más stock por sucursal para una franquicia
-
-```bash
-  GET http://localhost:8080/api/franchises/{franchiseId}/top-stock-products
+  GET http://localhost:8000/api/reservations/by-date?day=Monday
 ```
 
 Respuesta
 ```bash
-[
-  {
-    "branch": {
-      "id": 1,
-      "name": "Branch A"
-    },
-    "product": {
-      "id": 1,
-      "name": "Product A",
-      "stock": 150
+    {
+        "id": 1,
+        "firstName": "Juan",
+        "lastName": "Pérez",
+        "numPeople": 4,
+        "day": "Monday",
+        "startTime": "19:00:00",
+        "endTime": "20:00:00"
     }
-  },
-  {
-    "branch": {
-      "id": 2,
-      "name": "Branch B"
-    },
-    "product": {
-      "id": 2,
-      "name": "Product B",
-      "stock": 200
-    }
-  }
-]
 ```
 
-#### Eliminar un producto de una sucursal
+
+#### Eliminar una reserva
 
 ```bash
-  DELETE http://localhost:8080/api/franchises/products/{productId}
+  DELETE http://localhost:8000/api/reservations/{reservationId}
 ```
 
 Respuesta
 ```bash
-200
+204
 ```
 
-#### Modificar la información de un producto
+#### Modificar una reserva
 ```bash
-  PUT http://localhost:8080/api/franchises/products/{productId}
+  PUT http://localhost:8000/api/reservations/{reservationId}
 ```
 
 Body
 ```bash
 {
-  "name": "Product A1",
-  "stock": 90
+    "firstName": "Juan",
+    "lastName": "Pérez",
+    "numPeople": 4,
+    "day": "Monday",
+    "startTime": "19:00:00",
+    "endTime": "20:00:00",
+    "idAgenda": 1
 }
 
 ```
@@ -194,8 +148,12 @@ Respuesta
 ```bash
 {
     "id": 1,
-    "name": Product A1,
-    "stock": 90
+    "firstName": "Juan",
+    "lastName": "Pérez",
+    "numPeople": 4,
+    "day": "Monday",
+    "startTime": "19:00:00",
+    "endTime": "20:00:00"
 }
 ```
 
